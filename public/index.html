@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Storyteller · Room 9</title>
+<meta name="description" content="An interactive mystery where you are the main character.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,800;1,7..72,400;1,7..72,800&family=Reenie+Beanie&display=swap">
+<link rel="stylesheet" href="/styles.css">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0} [hidden]{display:none!important} img{max-width:100%}</style>
+</head>
+<body>
+<div class="col">
+  <section id="intro">
+    <div class="mono kicker" id="kicker">Storyteller</div>
+    <h1 class="title">Room <b>9</b></h1>
+    <p class="logline" id="logline">Loading…</p>
+    <dl class="facts" id="facts"></dl>
+
+    <fieldset class="plans" id="plans">
+      <legend class="mono">How do you want to experience it?</legend>
+      <label class="plan" for="plan-text"><input type="radio" name="plan" id="plan-text" value="text"><span class="pn">Story</span><span class="pd">The narrator writes every scene around your choices.</span><span class="pp">Free during beta</span></label>
+      <label class="plan" for="plan-illustrated"><input type="radio" name="plan" id="plan-illustrated" value="illustrated" checked><span class="pn">Illustrated</span><span class="pd">Plus pictures of the story, with you drawn into them.</span><span class="pp">Free during beta</span></label>
+      <label class="plan" for="plan-cinematic"><input type="radio" name="plan" id="plan-cinematic" value="cinematic"><span class="pn">Cinematic</span><span class="pd">Plus a short video clip of you at every cliffhanger.</span><span class="pp">Free during beta</span></label>
+    </fieldset>
+
+    <label class="code" for="betaCode" id="codeWrap" hidden>Beta access code<input id="betaCode" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+    <label class="age" for="age"><input type="checkbox" id="age"> <span id="ageText">I'm 18 or older.</span></label>
+    <div class="btnrow">
+      <button class="btn primary" id="begin" disabled>Begin</button>
+      <button class="btn" id="resume" hidden>Continue your case</button>
+    </div>
+    <div class="cerr" id="introErr" role="alert"></div>
+    <p class="fine">The story is written live by AI as you play. Characters and events are fictional.</p>
+    <p class="demo" id="demoNote" hidden></p>
+  </section>
+
+  <section id="game" hidden>
+    <header class="bar">
+      <div class="ep mono"><span id="epn">Episode 1</span><span class="t" id="ept"></span></div>
+      <div class="clock mono" id="clock"></div>
+      <button class="btn nb" id="openNb" aria-haspopup="dialog">Notebook<span class="count" id="ncount">0</span></button>
+    </header>
+    <div class="ai">AI-written story · fictional characters</div>
+    <main id="feed" aria-live="polite"></main>
+    <div id="working" hidden><span id="wlabel">The lodge creaks…</span><button class="btn" id="stop">Stop</button></div>
+    <div id="controls"></div>
+  </section>
+</div>
+
+<section id="creator" class="wide" hidden>
+  <div class="mono kicker">Hollow Pine Lodge · Check-in</div>
+  <h2 id="cTitle">Who walks into Room 9?</h2>
+  <p class="lede" id="cLede">Create the character you'll play. The illustrator draws you from this, so you'll see yourself in the story.</p>
+  <div class="cgrid">
+    <aside class="reg" aria-live="polite">
+      <div class="row mono"><span>Guest register</span><span id="rRoom">Room 4</span></div>
+      <div class="nm" id="rName">Sam Avery</div>
+      <div class="pr" id="rPron"></div>
+      <div class="mono">Description on file</div>
+      <div class="desc" id="rDesc"></div>
+      <div class="foot">Every picture you appear in is drawn from this.</div>
+    </aside>
+    <form class="cform" id="cForm" novalidate>
+      <fieldset>
+        <legend class="mono">Name</legend>
+        <div class="fgrid">
+          <label class="f" for="c-first">First name<input id="c-first" maxlength="20" autocomplete="off"></label>
+          <label class="f" for="c-last">Last name (optional)<input id="c-last" maxlength="24" autocomplete="off"></label>
+        </div>
+        <label class="f" for="c-pron">Pronouns other characters use<select id="c-pron"></select></label>
+        <div class="cerr" id="cErr" role="alert"></div>
+      </fieldset>
+      <div class="photo" id="photoBox">
+        <div><b>Start from a photo of yourself</b><span>We use it once to describe and draw your character. The photo itself isn't saved.</span></div>
+        <label class="age" for="pConsent" style="flex-basis:100%;margin:0"><input type="checkbox" id="pConsent"> <span>This is a photo of my own face, I'm 18 or older, and I agree to send it to our AI providers (Anthropic and Replicate) once to describe and draw my character.</span></label>
+        <input type="file" id="pFile" accept="image/jpeg,image/png,image/webp" hidden>
+        <button type="button" class="btn" id="pBtn" disabled>Choose a photo</button>
+        <div class="cerr" id="pMsg" role="status" style="flex-basis:100%"></div>
+      </div>
+      <fieldset>
+        <legend class="mono">Look</legend>
+        <div class="fgrid">
+          <label class="f" for="c-drawn">Draw me as<select id="c-drawn"></select></label>
+          <label class="f" for="c-age">Age<select id="c-age"></select></label>
+          <label class="f" for="c-build">Build<select id="c-build"></select></label>
+          <label class="f" for="c-skin">Skin tone<select id="c-skin"></select></label>
+          <label class="f" for="c-eyes">Eyes<select id="c-eyes"></select></label>
+          <label class="f" for="c-glasses">Glasses<select id="c-glasses"></select></label>
+          <label class="f" for="c-facial">Facial hair<select id="c-facial"></select></label>
+        </div>
+        <label class="f" for="c-hair">Hair<input id="c-hair" maxlength="60" placeholder="Short dark hair, a little unruly"></label>
+        <label class="f" for="c-detail">One detail people remember<input id="c-detail" maxlength="60" placeholder="A thin scar on the chin"></label>
+        <label class="f" for="c-outfit">What you wore up the mountain<input id="c-outfit" maxlength="70" placeholder="Charcoal peacoat, black jeans, hiking boots"></label>
+      </fieldset>
+      <div class="btnrow">
+        <button type="submit" class="btn primary" id="cGo">Check in</button>
+        <button type="button" class="btn" id="cAlt">Play as the default Sam Avery</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section id="portraitStep" class="wide" hidden>
+  <div class="mono kicker">Hollow Pine Lodge · Your portrait</div>
+  <h2 class="ptitle" style="font-style:italic;font-weight:800;font-size:clamp(34px,7vw,52px);line-height:1;margin:10px 0 8px">Is this you?</h2>
+  <p class="lede" style="color:var(--muted);max-width:52ch;margin:0 0 24px">This portrait is how the illustrator draws you in every scene.</p>
+  <div class="portrait">
+    <div class="pic" id="pPic"><div class="frame"><div class="wait" id="pWait">Drawing your portrait…</div></div></div>
+    <div class="side">
+      <div class="cerr" id="pStepMsg" role="status"></div>
+      <div class="btnrow">
+        <button class="btn primary" id="pApprove" disabled>That's me. Start the story</button>
+        <button class="btn" id="pAgain" disabled>Draw again</button>
+        <button class="btn" id="pEdit">Change my look</button>
+      </div>
+      <p class="fine" style="margin-top:0">Each drawing costs a few cents, so redraws are limited during the beta.</p>
+    </div>
+  </div>
+</section>
+
+<div class="scrim" id="nbScrim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="nbTitle">
+    <div class="top"><h2 id="nbTitle">Your notebook</h2><button class="btn" id="closeNb">Close</button></div>
+    <h3 class="mono">Evidence</h3>
+    <ul class="list" id="nbClues"></ul>
+    <h3 class="mono">People at the lodge</h3>
+    <ul class="list" id="nbPeople"></ul>
+    <div id="accuseWrap">
+      <h3 class="mono">Name the killer</h3>
+      <div id="accuseBody"></div>
+    </div>
+    <h3 class="mono">Your character</h3>
+    <div class="mecard"><img id="meImg" alt="Your character portrait" hidden><div><div class="n" id="meName"></div><div class="d" id="meDesc"></div></div></div>
+    <div class="btnrow" style="margin-top:10px"><button class="btn" id="editLook">Change your look</button></div>
+    <h3 class="mono">Settings</h3>
+    <div class="setting"><span>Experience</span><div class="seg" id="planSeg"><button data-v="text">Story</button><button data-v="illustrated">Illustrated</button><button data-v="cinematic">Cinematic</button></div></div>
+    <div class="setting"><span>Narrator</span><div class="seg" id="tier"><button data-v="fast">Fast</button><button data-v="rich">Rich</button></div></div>
+    <div class="setting"><span>Start the case over</span><button class="btn" id="restart">Start over</button></div>
+    <div class="setting" id="restartConfirm" hidden><span>Erase this playthrough?</span><div class="btnrow"><button class="btn primary" id="restartYes">Erase</button><button class="btn" id="restartNo">Keep</button></div></div>
+  </div>
+</div>
+
+<div class="scrim" id="care" hidden>
+  <div class="sheet care" role="dialog" aria-modal="true" aria-labelledby="careT">
+    <h2 id="careT">Stepping out of the story</h2>
+    <p>What you wrote sounded like it might be about you, not your character. If you're thinking about hurting yourself, you don't have to handle it alone.</p>
+    <p>In the US you can call or text <b>988</b> (Suicide &amp; Crisis Lifeline) any time. Outside the US, your local emergency number or a crisis line can help.</p>
+    <p>This is an AI-written story, and the characters aren't real people.</p>
+    <div class="btnrow"><button class="btn primary" id="careBack">Return to the story</button></div>
+  </div>
+</div>
+
+<script type="module" src="/app.js"></script>
+</body>
+</html>
